@@ -50,6 +50,13 @@ public class BookDemoWithRequiedFieldsSuccessTest {
         elementLetTalk.click();
 
         Thread.sleep(10000);
+
+        String URL= driver.getCurrentUrl();
+        String URLMM="https://saucelabs.com/thank-you-contact";
+        if (URL.equals(URLMM)){
+            System.out.println("PASS");
+        }else
+            System.out.println("FAIL");
         driver.quit();
 
     }

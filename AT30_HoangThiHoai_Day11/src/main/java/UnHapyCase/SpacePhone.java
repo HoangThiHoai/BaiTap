@@ -1,4 +1,4 @@
-package HapyCase;
+package UnHapyCase;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class BookDemoWithAllFieldsSuccessTest {
+public class SpacePhone {
     static void main(String[] args) throws InterruptedException {
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
@@ -18,11 +18,11 @@ public class BookDemoWithAllFieldsSuccessTest {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        //Case: Nhập hợp lệ tất cả các trường
+        //Case:phone toàn khoag trắng
 
         // Đợi Email field xuất hiện
         WebElement elementEmail = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='Email']")));
-        elementEmail.sendKeys("hoai@hoaidomain.com");
+        elementEmail.sendKeys("hoai@domainqq.com");
 
         WebElement elementFirstName = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='FirstName']")));
         //WebElement elementFirstName = driver.findElement(By.xpath("//input[@id='FristName']"));
@@ -33,10 +33,10 @@ public class BookDemoWithAllFieldsSuccessTest {
         elementLastName.sendKeys("Hoàng");
 
         WebElement elementCompany = driver.findElement(By.xpath("//input[@id='Company']"));
-        elementCompany.sendKeys("Công ty A");
+        elementCompany.sendKeys("Công Ty B");
 
         WebElement elementPhone = driver.findElement(By.xpath("//input[@id='Phone']"));
-        elementPhone.sendKeys("123456789");
+        elementPhone.sendKeys("");
 
         WebElement elementCountry = driver.findElement(By.xpath("//select[@id='Country']"));
         Select selectCountry = new Select(elementCountry);
@@ -51,18 +51,20 @@ public class BookDemoWithAllFieldsSuccessTest {
 
         WebElement elementCheckBox = driver.findElement(By.xpath("//input[@id='mktoCheckbox_47709_0']"));
         elementCheckBox.click();
-
+        ;
         WebElement elementLetTalk = driver.findElement(By.xpath("//button[@class='mktoButton']"));
         elementLetTalk.click();
 
-        Thread.sleep(10000);
-
-        String URL= driver.getCurrentUrl();
-        String URLMM="https://saucelabs.com/thank-you-contact";
-        if (URL.equals(URLMM)){
+        WebElement elementRequiedPhone = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ValidMsgPhone']")));
+        String KQMMRequiePhone = "Must be a phone number.\n" +
+                "503-555-1212";
+        if (elementRequiedPhone.getText().equals(KQMMRequiePhone)) {
             System.out.println("PASS");
-        }else
+        } else {
             System.out.println("FAIL");
+        }
+
+        Thread.sleep(3000);
         driver.quit();
 
     }

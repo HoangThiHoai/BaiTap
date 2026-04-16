@@ -1,4 +1,4 @@
-package HapyCase;
+package UnHapyCase;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class BookDemoWithAllFieldsSuccessTest {
+public class SpaceLastName {
     static void main(String[] args) throws InterruptedException {
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
@@ -18,11 +18,11 @@ public class BookDemoWithAllFieldsSuccessTest {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        //Case: Nhập hợp lệ tất cả các trường
+        //Case:lastName nhaapj toàn khaonrg cách
 
         // Đợi Email field xuất hiện
         WebElement elementEmail = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='Email']")));
-        elementEmail.sendKeys("hoai@hoaidomain.com");
+        elementEmail.sendKeys("hoai@domain.com");
 
         WebElement elementFirstName = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='FirstName']")));
         //WebElement elementFirstName = driver.findElement(By.xpath("//input[@id='FristName']"));
@@ -30,7 +30,7 @@ public class BookDemoWithAllFieldsSuccessTest {
 
         //WebElement elementLastName= wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='LastName']")));
         WebElement elementLastName = driver.findElement(By.xpath("//input[@id='LastName']"));
-        elementLastName.sendKeys("Hoàng");
+        elementLastName.sendKeys("         ");
 
         WebElement elementCompany = driver.findElement(By.xpath("//input[@id='Company']"));
         elementCompany.sendKeys("Công ty A");
@@ -55,14 +55,15 @@ public class BookDemoWithAllFieldsSuccessTest {
         WebElement elementLetTalk = driver.findElement(By.xpath("//button[@class='mktoButton']"));
         elementLetTalk.click();
 
-        Thread.sleep(10000);
-
-        String URL= driver.getCurrentUrl();
-        String URLMM="https://saucelabs.com/thank-you-contact";
-        if (URL.equals(URLMM)){
+        WebElement elementRequiedLastName = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='ValidMsgLastName']")));
+        String KQMMRequieLastName = "This field is required.";
+        if (elementRequiedLastName.getText().equals(KQMMRequieLastName)) {
             System.out.println("PASS");
-        }else
+        } else {
             System.out.println("FAIL");
+        }
+
+        Thread.sleep(3000);
         driver.quit();
 
     }

@@ -9,8 +9,38 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.Random;
 
-public class BookDemoWithAllFieldsSuccessTest {
+public class BangMaxLength {
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    public static String generateRandomString(int n) {
+        Random random = new Random();
+        StringBuilder result = new StringBuilder(n);
+
+        for (int i = 0; i < n; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            result.append(CHARACTERS.charAt(index));
+        }
+
+        return result.toString();
+    }
+    private static final String INT = "0123456789";
+
+    public static String generateRandomInt(int n) {
+        Random random = new Random();
+        StringBuilder result = new StringBuilder(n);
+
+        for (int i = 0; i < n; i++) {
+            int index = random.nextInt(INT.length());
+            result.append(INT.charAt(index));
+        }
+
+        return result.toString();
+    }
+
+
     static void main(String[] args) throws InterruptedException {
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
@@ -18,25 +48,25 @@ public class BookDemoWithAllFieldsSuccessTest {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        //Case: Nhập hợp lệ tất cả các trường
+        //Case: Nhập =maxlength
 
         // Đợi Email field xuất hiện
         WebElement elementEmail = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='Email']")));
-        elementEmail.sendKeys("hoai@hoaidomain.com");
+        elementEmail.sendKeys(generateRandomString(255 - 11) + "@domain.com");
 
         WebElement elementFirstName = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='FirstName']")));
         //WebElement elementFirstName = driver.findElement(By.xpath("//input[@id='FristName']"));
-        elementFirstName.sendKeys("Hoài");
+        elementFirstName.sendKeys(generateRandomString(100));
 
         //WebElement elementLastName= wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='LastName']")));
         WebElement elementLastName = driver.findElement(By.xpath("//input[@id='LastName']"));
-        elementLastName.sendKeys("Hoàng");
+        elementLastName.sendKeys(generateRandomString(100));
 
         WebElement elementCompany = driver.findElement(By.xpath("//input[@id='Company']"));
-        elementCompany.sendKeys("Công ty A");
+        elementCompany.sendKeys(generateRandomString(255));
 
         WebElement elementPhone = driver.findElement(By.xpath("//input[@id='Phone']"));
-        elementPhone.sendKeys("123456789");
+        elementPhone.sendKeys(generateRandomInt(255));
 
         WebElement elementCountry = driver.findElement(By.xpath("//select[@id='Country']"));
         Select selectCountry = new Select(elementCountry);
@@ -47,7 +77,7 @@ public class BookDemoWithAllFieldsSuccessTest {
         selectInterest.selectByValue("Mobile Application Testing");
 
         WebElement elementComment = driver.findElement(By.xpath("//textarea[@id='Sales_Contact_Comments__c']"));
-        elementComment.sendKeys("Nhập ghi chú test");
+        elementComment.sendKeys(generateRandomString(255));
 
         WebElement elementCheckBox = driver.findElement(By.xpath("//input[@id='mktoCheckbox_47709_0']"));
         elementCheckBox.click();

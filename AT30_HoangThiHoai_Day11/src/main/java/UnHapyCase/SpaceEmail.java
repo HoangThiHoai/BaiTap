@@ -1,4 +1,4 @@
-package HapyCase;
+package UnHapyCase;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class BookDemoWithAllFieldsSuccessTest {
+public class SpaceEmail {
     static void main(String[] args) throws InterruptedException {
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
@@ -18,29 +18,14 @@ public class BookDemoWithAllFieldsSuccessTest {
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        //Case: Nhập hợp lệ tất cả các trường
+        //Case:Email có khoảng trắng
 
         // Đợi Email field xuất hiện
         WebElement elementEmail = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='Email']")));
-        elementEmail.sendKeys("hoai@hoaidomain.com");
-
-        WebElement elementFirstName = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='FirstName']")));
-        //WebElement elementFirstName = driver.findElement(By.xpath("//input[@id='FristName']"));
-        elementFirstName.sendKeys("Hoài");
-
-        //WebElement elementLastName= wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@id='LastName']")));
-        WebElement elementLastName = driver.findElement(By.xpath("//input[@id='LastName']"));
-        elementLastName.sendKeys("Hoàng");
+        elementEmail.sendKeys("          ");
 
         WebElement elementCompany = driver.findElement(By.xpath("//input[@id='Company']"));
         elementCompany.sendKeys("Công ty A");
-
-        WebElement elementPhone = driver.findElement(By.xpath("//input[@id='Phone']"));
-        elementPhone.sendKeys("123456789");
-
-        WebElement elementCountry = driver.findElement(By.xpath("//select[@id='Country']"));
-        Select selectCountry = new Select(elementCountry);
-        selectCountry.selectByVisibleText("Angola");
 
         WebElement elementInterest = driver.findElement(By.xpath("//select[@id='Solution_Interest__c']"));
         Select selectInterest = new Select(elementInterest);
@@ -55,14 +40,16 @@ public class BookDemoWithAllFieldsSuccessTest {
         WebElement elementLetTalk = driver.findElement(By.xpath("//button[@class='mktoButton']"));
         elementLetTalk.click();
 
-        Thread.sleep(10000);
 
-        String URL= driver.getCurrentUrl();
-        String URLMM="https://saucelabs.com/thank-you-contact";
-        if (URL.equals(URLMM)){
+        WebElement elementRequiedEmailRow= driver.findElement(By.xpath("//div[text()='Must be valid email. ']"));
+        String KQMMRequiedEmailRow = "Must be valid email.\n" + "example@yourdomain.com";
+        if (elementRequiedEmailRow.getText().equals(KQMMRequiedEmailRow)) {
             System.out.println("PASS");
-        }else
+        } else {
             System.out.println("FAIL");
+        }
+
+        Thread.sleep(10000);
         driver.quit();
 
     }
