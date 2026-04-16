@@ -1,0 +1,4 @@
+BTVN: Gửi lớp bài tập về nhà: https://saucelabs.com/request-demo								
+Viết kịch bản auto test sau:								
+case 1 (happly case):khách hàng nhập thông tin vào biểu mẫu "Book Your Demo Here" thành công								
+case 2 (unhapply case):khách hàng nhập thông tin vào biểu mẫu "Book Your Demo Here" khi KHÔNG nhập trường required (ví dụ không nhập INTEREST)
