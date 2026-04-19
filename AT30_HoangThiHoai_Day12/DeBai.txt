@@ -1,0 +1,20 @@
+Viết kịch bản auto: Kiểm tra checkout sản phẩm thành công'  
+Step1 : Login vào https://www.saucedemo.com/  
+Step 2: Chọn tìm kiếm droplist Price (low to high)  
+Step 3: Add to cart 2 sản phẩm bất kì  
+System.out.println: ở giỏ hàng hiển thị số 2  
+Step 4: Click vào giỏ hàng  
+System.out.println 1: Thông tin Your Cart hiển thị đúng 2 sản phẩm với tên và giá tiền đúng  
+System.out.println 2: Màn hình có hiển thị 2 button Remove  
+Step 5: Click checkout và nhập các thông tin Firts name, Last name, Zip code  
+Step 6: Click continute  
+System.out.println 1 : Thông tin Description hiển thị đúng 2 sản phẩm với số lượng, tên và giá tiền đúng  
+System.out.println 2: Shipping Information hiển thị đúng "Free Pony Express Delivery!"  
+System.out.println 3: Price Total hiển thị đúng tổng tiền 2 sản phẩm  
+System.out.println 4: Total hiển thị đúng tổng tiền của Item total + Tax  
+System.out.println 5: Button Finish hiển thị  
+Step 7: Click Finish  
+System.out.println 1 : hiển thị "Checkout: Complete!"  
+System.out.println 2 : hiển thị "Thank you for your order!"  
+System.out.println 3 : hiển thị "Your order has been dispatched, and will arrive just as fast as the pony can get there!"  
+System.out.println 3 : hiển thị button Back Home
