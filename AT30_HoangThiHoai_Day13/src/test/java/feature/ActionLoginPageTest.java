@@ -12,6 +12,7 @@ public class ActionLoginPageTest {
     public static final String FILE_SHEET = "Login";
     private static final String FILE_PATH = "dataTestLogin.xlsx";
     private static final String URL = "https://saucelabs.com/request-demo";
+    private static final String STT = "STT";
     private static final String EMAIL = "Email";
     private static final String FIRST_NAME = "FirstName";
     private static final String LAST_NAME = "LastName";
@@ -21,6 +22,7 @@ public class ActionLoginPageTest {
     private static final String INTEREST = "Interest";
     private static final String COMMENTS = "Comments";
     private static final String CHECKBOX = "Checkbox";
+    private static final String KQMM = "KQMM";
 
     static void main(String[] args) throws InterruptedException {
         List<Map<String, String>> excelData = ExcelUtils.readExcelData(FILE_PATH, FILE_SHEET);
@@ -29,11 +31,15 @@ public class ActionLoginPageTest {
         try {
             for (Map<String, String> rowData : excelData) {
                 driver.get(URL);
-                LoginAction.performLogin(driver, rowData.get(EMAIL), rowData.get(FIRST_NAME), rowData.get(LAST_NAME), rowData.get(COMPANY), rowData.get(PHONE),
-                        rowData.get(COUNTRY), rowData.get(INTEREST), rowData.get(COMMENTS), rowData.get(CHECKBOX));
-
-                System.out.println(rowData.get(EMAIL));
+                String actual= LoginAction.performLogin(driver,rowData.get(EMAIL), rowData.get(FIRST_NAME), rowData.get(LAST_NAME), rowData.get(COMPANY), rowData.get(PHONE),
+                        rowData.get(COUNTRY), rowData.get(INTEREST), rowData.get(COMMENTS), rowData.get(CHECKBOX) );
+                if (actual.equals(rowData.get(KQMM))) {
+                    System.out.println("STT "+rowData.get(STT)+" PASS");
+                }else  {
+                    System.out.println("STT "+rowData.get(STT)+" FAIL ACTUAL: " +actual +" EXPECTED: " +rowData.get(KQMM));
+                }
             }
+
         } finally {
             driver.quit();
         }
