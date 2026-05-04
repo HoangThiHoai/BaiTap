@@ -12,6 +12,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import utils.ChromeOptionsUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,7 @@ public class ProductTest {
     WebDriver driver;
     @BeforeMethod
     public void loginBeforeTest() {
-        driver = new ChromeDriver();
+        driver = new ChromeDriver(ChromeOptionsUtils.getChromeOptions());
         driver.manage().window().maximize();
         driver.get("https://www.saucedemo.com/");
         LoginPage loginPage = new LoginPage(driver);
