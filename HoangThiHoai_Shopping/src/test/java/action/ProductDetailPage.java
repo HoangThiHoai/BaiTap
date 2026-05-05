@@ -16,7 +16,8 @@ public class ProductDetailPage {
     private By productDesc = By.cssSelector("[data-test='inventory-item-desc']");
     private By productPrice = By.cssSelector("[data-test='inventory-item-price']");
     private By addToCartButton = By.cssSelector("[data-test='add-to-cart']");
-    private By backToProductsButton = By.id("back-to-products");
+    private By removeButton = By.cssSelector("[data-test='remove']");
+    private By backToProductsButton = By.cssSelector("[data-test='back-to-products']");
     private By productImage = By.className("inventory_details_img");
     private By cartBadge = By.className("shopping_cart_badge");
 
@@ -25,7 +26,7 @@ public class ProductDetailPage {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        //wait.until(ExpectedConditions.visibilityOfElementLocated(backToProductsButton));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(backToProductsButton));
     }
     public WebElement getItemName() {
         return driver.findElement(productName);
@@ -47,17 +48,21 @@ public class ProductDetailPage {
         return driver.findElement(addToCartButton);
     }
 
-    public void clickProductByName(String name) {
-        By nameLink = By.xpath("//div[text()='" + name + "']/ancestor::div[@class='inventory_item']");
-        driver.findElement(nameLink).click();
-
+    public WebElement getButtonRemoveText() {
+        return driver.findElement(removeButton);
     }
 
     public void clickAddToCart() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(addToCartButton));
         driver.findElement(addToCartButton).click();
+    }
+    public void clickRemove() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(removeButton));
+        driver.findElement(removeButton).click();
     }
 
     public void clickBackToProducts() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(backToProductsButton));
         driver.findElement(backToProductsButton).click();
     }
 

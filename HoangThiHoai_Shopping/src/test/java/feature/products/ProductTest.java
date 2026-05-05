@@ -8,10 +8,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import utils.ChromeOptionsUtils;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +25,8 @@ public class ProductTest {
     WebDriver driver;
     @BeforeMethod
     public void loginBeforeTest() {
-        driver = new ChromeDriver();
+        ChromeOptions chromeOptions = ChromeOptionsUtils.GetChromeOptionsUtils();
+        driver = new ChromeDriver(chromeOptions);
         driver.manage().window().maximize();
         driver.get("https://www.saucedemo.com/");
         LoginPage loginPage = new LoginPage(driver);
@@ -92,32 +97,98 @@ public class ProductTest {
 
         Assert.assertTrue(productPage.getItemImage(targetName).getAttribute("src").contains("sauce-backpack"));
         Assert.assertTrue(productPage.getItemImage(targetName).isDisplayed(),"Ảnh đang chưa hiển thị");
-//        productPage.getItemImage(targetName).click();
-//        Assert.assertTrue(driver.getCurrentUrl().contains("inventory-item.html"));
-//        driver.navigate().back();
+        productPage.getItemImage(targetName).click();
+        Assert.assertTrue(driver.getCurrentUrl().contains("inventory-item.html"));
+        driver.navigate().back();
 
         Assert.assertEquals(productPage.getButtonText(targetName).getText(),"Add to cart");
         Assert.assertTrue(productPage.getButtonText(targetName).isDisplayed(),"Button Add to cart chưa hiển thị");
 
+        //kiểm tra hoạt động icon cart
         productPage.clickCart();
         Assert.assertTrue(driver.getCurrentUrl().contains("cart.html"));
         driver.navigate().back();
 
+//        //Kiểm tra text link Back to products
+//        WebElement backToProductsButton=driver.findElement(By.xpath("//button[@id='back-to-products']"));
+//        String backToProductsButtonText=backToProductsButton.getText();
+//        Assert.assertEquals(backToProductsButtonText,"Back to products","Text Back to products chưa khớp");
+//
+//        //kiểm tra clickBackToProducts
+//        ProductDetailPage productDetailPage = new ProductDetailPage(driver);
+//        productDetailPage.clickBackToProducts();
+//        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+
     }
     @Test
-    public void testProductAddToCart() {
+    public void testAddToCartAndRemoveFromProductPage() {
         ProductPage productPage = new ProductPage(driver);
         String targetName = "Sauce Labs Backpack";
+        String targetName2 ="Sauce Labs Bike Light";
 
         // 1. Kiểm tra ban đầu giỏ hàng trống (nếu login mới)
-        Assert.assertFalse(productPage.isCartBadgeDisplayed(), "Cart badge should not be displayed initially");
+        Assert.assertFalse(productPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
 
         // 2. Click Add to Cart
         productPage.clickAddToCart(targetName);
+        productPage.clickAddToCart(targetName2);
 
         // 3. Kiểm tra số lượng trên icon giỏ hàng
-        Assert.assertTrue(productPage.isCartBadgeDisplayed(), "Cart badge should be displayed");
-        Assert.assertEquals(productPage.getCartBadgeCount(), "1", "Cart badge count should be 1");
+        Assert.assertTrue(productPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
+        Assert.assertEquals(productPage.getCartBadgeCount(), "2", "Số lượng giỏ hàng không khớp");
+
+        //4. Xóa sản phẩm vừa thêm
+        productPage.clickAddToCart(targetName2);
+
+        // 5. Kiểm tra số lượng trên icon giỏ hàng
+        Assert.assertTrue(productPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
+        Assert.assertEquals(productPage.getCartBadgeCount(), "1", "Số lượng giỏ hàng không khớp");
+
+    }
+    @Test
+    public void testAddToCartFormProductDetail() {
+        ProductPage productPage = new ProductPage(driver);
+        String targetProductName = "Sauce Labs Backpack";
+
+        // 1. Kiểm tra ban đầu giỏ hàng trống (nếu login mới)
+        Assert.assertFalse(productPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
+
+        // 2. Click mở trang Detail
+        productPage.clickProductByName(targetProductName);
+
+        // 3. Click Add to Cart từ trang detail
+        ProductDetailPage productDetailPage =new ProductDetailPage(driver);
+        productDetailPage.clickAddToCart();
+
+        // 4. Kiểm tra số lượng trên icon giỏ hàng
+        Assert.assertTrue(productDetailPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
+        Assert.assertEquals(productDetailPage.getCartBadgeCount(), "1", "Số lượng giỏ hàng không khớp");
+
+    }
+    @Test
+    public void testRemoveFormProductDetail() {
+        ProductPage productPage = new ProductPage(driver);
+        String targetProductName = "Sauce Labs Backpack";
+        String targetProductName2 ="Sauce Labs Bike Light";
+
+        // 1. Kiểm tra ban đầu giỏ hàng trống (nếu login mới)
+        Assert.assertFalse(productPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
+
+        // 2. Click Add to cart
+        productPage.clickAddToCart(targetProductName);
+        productPage.clickAddToCart(targetProductName2);
+
+        // 3. Click mở trang Detail
+        productPage.clickProductByName(targetProductName);
+
+        // 4. Click Remove từ trang detail
+        ProductDetailPage productDetailPage =new ProductDetailPage(driver);
+        productDetailPage.clickRemove();
+
+        // 5. Kiểm tra số lượng trên icon giỏ hàng
+        Assert.assertTrue(productDetailPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
+        Assert.assertEquals(productDetailPage.getCartBadgeCount(), "1", "Số lượng giỏ hàng không khớp");
+
     }
     @Test
     public void verifyProductDetailPageWithProductPage() {
@@ -128,6 +199,8 @@ public class ProductTest {
         String inventoryName = productPage.getItemName(targetProductName).getText();
         String inventoryDesc = productPage.getItemDescription(targetProductName).getText();
         String inventoryPrice = productPage.getItemPrice(targetProductName).getText();
+        String inventoryImage =productPage.getItemImage(targetProductName).getAttribute("src");
+        String inventoryButtonText =productPage.getButtonText(targetProductName).getText();
 
         // 2. Click mở trang Detail
         productPage.clickProductByName(targetProductName);
@@ -135,10 +208,12 @@ public class ProductTest {
         // 3. Lấy dữ liệu từ trang Detail
         ProductDetailPage detailPage = new ProductDetailPage(driver);
 
-        // 4. Kiểm tra chéo (Cross-verification)
+        // 4. Kiểm tra chéo
         Assert.assertEquals(detailPage.getItemName().getText(), inventoryName, "Tên sản phẩm không khớp!");
         Assert.assertEquals(detailPage.getItemDescription().getText(), inventoryDesc, "Mô tả không khớp!");
         Assert.assertEquals(detailPage.getItemPrice().getText(), inventoryPrice, "Giá không khớp!");
+        Assert.assertEquals(detailPage.getItemImage().getAttribute("src"),inventoryImage,"Ảnh không khớp");
+        Assert.assertEquals(detailPage.getButtonText().getText(),inventoryButtonText,"Button không khớp");
 
         // 5. Quay lại trang chủ
         detailPage.clickBackToProducts();

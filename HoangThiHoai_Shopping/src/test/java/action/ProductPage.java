@@ -75,7 +75,7 @@ public class ProductPage {
     }
 
     public void clickProductByName(String name) {
-        By nameLink = By.xpath("//div[text()='" + name + "']/ancestor::div[@class='inventory_item']");
+        By nameLink = By.xpath("//div[text()='" + name + "']/ancestor::div[@class='inventory_item']/descendant::div[@data-test='inventory-item-name']");
         driver.findElement(nameLink).click();
 
     }
