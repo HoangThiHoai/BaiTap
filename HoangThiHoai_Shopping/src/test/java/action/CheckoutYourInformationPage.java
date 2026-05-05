@@ -18,14 +18,15 @@ public class CheckoutYourInformationPage {
     private By zipCodeInput = By.id("postal-code");
     private By continueButton = By.id("continue");
     private By errorMessage = By.cssSelector("[data-test='error']");
-    private By errorContainer = By.cssSelector(".error-message-container.error");
     private By cartBadge = By.className("shopping_cart_badge");
+
+    private By cancelButton = By.id("cancel");
 
     public CheckoutYourInformationPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(continueButton));
     }
+
 
     public void enterInfo(String firstName, String lastName, String zipCode) {
         driver.findElement(firstNameInput).clear();
@@ -41,9 +42,20 @@ public class CheckoutYourInformationPage {
     public void clickContinue() {
         driver.findElement(continueButton).click();
     }
+    public WebElement getButtonContineText() {
+        WebElement itemButton = driver.findElement(By.xpath("//input[@id='continue']"));
+        return itemButton;
+    }
+    public void clickCancel() {
+        driver.findElement(cancelButton).click();
+    }
+    public WebElement getButtonCancelText() {
+        WebElement itemButton = driver.findElement(By.xpath("//button[@id='cancel']"));
+        return itemButton;
+    }
 
-    public WebElement getErrorMessage() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
+    public String getErrorMessage() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText();
     }
 
     public String getCartBadgeCount() {

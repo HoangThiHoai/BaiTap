@@ -6,8 +6,8 @@ import action.LoginPage;
 import action.ProductPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -21,6 +21,26 @@ import java.util.Map;
 
 public class CheckoutYourInformationTest {
     WebDriver driver;
+    @BeforeMethod
+    public void setup() {
+        driver = new ChromeDriver(ChromeOptionsUtils.GetChromeOptionsUtils());
+        driver.manage().window().maximize();
+        driver.get("https://www.saucedemo.com/");
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.login("standard_user", "secret_sauce");
+
+
+        String targetProductName = "Sauce Labs Backpack";
+        String targetProductName2 = "Sauce Labs Bike Light";
+        ProductPage productPage = new ProductPage(driver);
+        productPage.clickAddToCart(targetProductName);
+        productPage.clickAddToCart(targetProductName2);
+        productPage.clickCart();
+
+        CartPage cartPage = new CartPage(driver);
+        cartPage.clickCheckout();
+    }
+
     @DataProvider(name = "checkoutData")
     public Object[][] getCheckoutData() {
         List<Map<String, String>> dataList = ExcelUtils.readExcelData("DataTest.xlsx", "CheckoutInfo");
@@ -35,36 +55,16 @@ public class CheckoutYourInformationTest {
         return data;
     }
 
-    @BeforeMethod
-    public void loginBeforeTest() {
-        ChromeOptions chromeOptions = ChromeOptionsUtils.GetChromeOptionsUtils();
-        driver = new ChromeDriver(chromeOptions);
-        driver.manage().window().maximize();
-        driver.get("https://www.saucedemo.com/");
-        LoginPage loginPage = new LoginPage(driver);
-        loginPage.login("standard_user", "secret_sauce");
-
-        ProductPage productPage = new ProductPage(driver);
-        String targetName = "Sauce Labs Backpack";
-        String targetName2 = "Sauce Labs Bike Light";
-        productPage.clickAddToCart(targetName);
-        productPage.clickAddToCart(targetName2);
-        By cartIcon = By.cssSelector("[data-test='shopping-cart-link']");
-        driver.findElement(cartIcon).click();
-
-        CartPage cartPage = new CartPage(driver);
-        cartPage.clickCheckout();
-    }
     @Test(dataProvider = "checkoutData")
     public void testCheckoutInfo(String firstName, String lastName, String zipCode, String expectedResult) {
-        CheckoutYourInformationPage checkoutYourInformationPage = new CheckoutYourInformationPage(driver);
-        checkoutYourInformationPage.enterInfo(firstName, lastName, zipCode);
-        checkoutYourInformationPage.clickContinue();
+        CheckoutYourInformationPage infoPage = new CheckoutYourInformationPage(driver);
+        infoPage.enterInfo(firstName, lastName, zipCode);
+        infoPage.clickContinue();
 
         if ("success".equals(expectedResult)) {
             Assert.assertTrue(driver.getCurrentUrl().contains("checkout-step-two.html"), "Should navigate to checkout overview");
         } else {
-            String errorMsg = checkoutYourInformationPage.getErrorMessage().getText();
+            String errorMsg = infoPage.getErrorMessage();
             if ("error_first_name".equals(expectedResult)) {
                 Assert.assertTrue(errorMsg.contains("First Name is required"), "Error mismatch for first name");
             } else if ("error_last_name".equals(expectedResult)) {
@@ -73,6 +73,39 @@ public class CheckoutYourInformationTest {
                 Assert.assertTrue(errorMsg.contains("Postal Code is required"), "Error mismatch for zip code");
             }
         }
+    }
+    @Test
+    public void verifyTextYourInformation() {
+
+        WebElement title = driver.findElement(By.xpath("//span[@data-test='title']"));
+        String actualTitle = title.getText();
+        Assert.assertEquals(actualTitle,"Checkout: Your Information");
+        Assert.assertTrue(title.isDisplayed(),"Title Checkout: Your Information không displayed");
+
+        WebElement logo= driver.findElement(By.xpath("//div[@class='app_logo']"));
+        String actualLogo = logo.getText();
+        Assert.assertEquals(actualLogo,"Swag Labs");
+        Assert.assertTrue(logo.isDisplayed(),"Logo không displayed");
+
+        //verify button Continue
+        CheckoutYourInformationPage yourInformation = new CheckoutYourInformationPage(driver);
+        Assert.assertEquals(yourInformation.getButtonContineText().getAttribute("value"),"Continue");
+        yourInformation.enterInfo("First Name", "Last Name", "Zip Code");
+        yourInformation.clickContinue();
+        Assert.assertTrue(driver.getCurrentUrl().contains("checkout-step-two.html"));
+        driver.navigate().back();
+
+
+
+        //verify button Cancel
+        Assert.assertEquals(yourInformation.getButtonCancelText().getText(),"Cancel");
+        yourInformation.clickCancel();
+        Assert.assertTrue(driver.getCurrentUrl().contains("cart.html"));
+        driver.navigate().back();
+
+
+        //verify so luong gio hang
+
     }
 
     @AfterMethod
@@ -83,5 +116,4 @@ public class CheckoutYourInformationTest {
             driver.quit();
         }
     }
-
 }
