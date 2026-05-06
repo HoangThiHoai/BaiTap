@@ -1,5 +1,6 @@
 package action;
 
+import feature.ui.CartPageUI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,53 +14,30 @@ public class CartPage {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    private By checkoutButton = By.id("checkout");
-    private By continueShoppingButton = By.id("continue-shopping");
-    private By cartBadge = By.className("shopping_cart_badge");
-
     public CartPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public WebElement getItemName(String name) {
-        WebElement itemName = driver.findElement(By.xpath("//div[text()='" + name + "']"));
-        return itemName;
-    }
-
-    public WebElement getItemPrice(String name) {
-        WebElement itemPrice = driver.findElement(By.xpath("//div[text()='" + name + "']/ancestor::div[@class='cart_item']/descendant::div[@class='inventory_item_price']"));
-        return itemPrice;
-    }
-
-    public WebElement getItemDescription(String name) {
-        WebElement itemDescription = driver.findElement(By.xpath("//div[text()='" + name + "']/ancestor::div[@class='cart_item']/descendant::div[@class='inventory_item_desc']"));
-        return itemDescription;
-    }
-
-
-    public WebElement getButtonText(String name) {
-        WebElement itemButton = driver.findElement(By.xpath(" //div[text()='" + name + "']/ancestor::div[@class='cart_item']/descendant::button"));
-        return itemButton;
-    }
-
     public void clickProductByName(String name) {
-        By nameLink = By.xpath("//div[text()='" + name + "']");
-        driver.findElement(nameLink).click();
-
+        driver.findElement(CartPageUI.getItemName(name)).click();
     }
 
     public void clickRemoveButton(String name) {
-        By removeButton = By.xpath("//div[text()='" + name + "']/ancestor::div[@class='cart_item']/descendant::button");
-        driver.findElement(removeButton).click();
+        driver.findElement(CartPageUI.getRemoveButton(name)).click();
     }
     public void clickCheckout() {
-        driver.findElement(checkoutButton).click();
+        driver.findElement(CartPageUI.CHECKOUT_BUTTON).click();
         wait.until(ExpectedConditions.urlContains("checkout-step-one.html"));
     }
 
+    public void clickContinueShopping() {
+        driver.findElement(CartPageUI.CONTINUE_SHOPPING_BUTTON).click();
+        wait.until(ExpectedConditions.urlContains("inventory.html"));
+    }
+
     public String getCartBadgeCount() {
-        List<WebElement> badges = driver.findElements(cartBadge);
+        List<WebElement> badges = driver.findElements(CartPageUI.CART_BADGE);
         if (badges.isEmpty()) {
             return "";
         }
@@ -67,7 +45,11 @@ public class CartPage {
     }
 
     public boolean isCartBadgeDisplayed() {
-        return !driver.findElements(cartBadge).isEmpty();
+        return !driver.findElements(CartPageUI.CART_BADGE).isEmpty();
+    }
+    public boolean isCartEmpty() {
+        return driver.findElements(By.className("cart_item")).isEmpty();
     }
 }
+
 

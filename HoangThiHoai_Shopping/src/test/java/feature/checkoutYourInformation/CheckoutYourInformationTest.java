@@ -4,6 +4,7 @@ import action.CartPage;
 import action.CheckoutYourInformationPage;
 import action.LoginPage;
 import action.ProductPage;
+import feature.ui.CheckoutYourInformationPageUI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,19 +14,16 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import utils.BaseTest;
 import utils.ChromeOptionsUtils;
 import utils.ExcelUtils;
 
 import java.util.List;
 import java.util.Map;
 
-public class CheckoutYourInformationTest {
-    WebDriver driver;
+public class CheckoutYourInformationTest extends BaseTest {
     @BeforeMethod
     public void setup() {
-        driver = new ChromeDriver(ChromeOptionsUtils.GetChromeOptionsUtils());
-        driver.manage().window().maximize();
-        driver.get("https://www.saucedemo.com/");
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("standard_user", "secret_sauce");
 
@@ -77,28 +75,27 @@ public class CheckoutYourInformationTest {
     @Test
     public void verifyTextYourInformation() {
 
-        WebElement title = driver.findElement(By.xpath("//span[@data-test='title']"));
+        WebElement title = driver.findElement(CheckoutYourInformationPageUI.TITLE);
         String actualTitle = title.getText();
         Assert.assertEquals(actualTitle,"Checkout: Your Information");
         Assert.assertTrue(title.isDisplayed(),"Title Checkout: Your Information không displayed");
 
-        WebElement logo= driver.findElement(By.xpath("//div[@class='app_logo']"));
+        WebElement logo= driver.findElement(CheckoutYourInformationPageUI.APP_LOGO);
         String actualLogo = logo.getText();
         Assert.assertEquals(actualLogo,"Swag Labs");
         Assert.assertTrue(logo.isDisplayed(),"Logo không displayed");
 
         //verify button Continue
         CheckoutYourInformationPage yourInformation = new CheckoutYourInformationPage(driver);
-        Assert.assertEquals(yourInformation.getButtonContineText().getAttribute("value"),"Continue");
+        Assert.assertEquals(driver.findElement(CheckoutYourInformationPageUI.CONTINUE_BUTTON).getAttribute("value"),"Continue");
         yourInformation.enterInfo("First Name", "Last Name", "Zip Code");
         yourInformation.clickContinue();
         Assert.assertTrue(driver.getCurrentUrl().contains("checkout-step-two.html"));
         driver.navigate().back();
 
 
-
         //verify button Cancel
-        Assert.assertEquals(yourInformation.getButtonCancelText().getText(),"Cancel");
+        Assert.assertEquals(driver.findElement(CheckoutYourInformationPageUI.CANCEL_BUTTON).getText(),"Cancel");
         yourInformation.clickCancel();
         Assert.assertTrue(driver.getCurrentUrl().contains("cart.html"));
         driver.navigate().back();

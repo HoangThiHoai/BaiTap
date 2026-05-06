@@ -1,6 +1,6 @@
 package action;
 
-import org.openqa.selenium.By;
+import feature.ui.ProductDetailPageUI;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,62 +12,52 @@ import java.util.List;
 public class ProductDetailPage {
     private WebDriver driver;
     private WebDriverWait wait;
-    private By productName = By.cssSelector("[data-test='inventory-item-name']");
-    private By productDesc = By.cssSelector("[data-test='inventory-item-desc']");
-    private By productPrice = By.cssSelector("[data-test='inventory-item-price']");
-    private By addToCartButton = By.cssSelector("[data-test='add-to-cart']");
-    private By removeButton = By.cssSelector("[data-test='remove']");
-    private By backToProductsButton = By.cssSelector("[data-test='back-to-products']");
-    private By productImage = By.className("inventory_details_img");
-    private By cartBadge = By.className("shopping_cart_badge");
 
 
     public ProductDetailPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(backToProductsButton));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(ProductDetailPageUI.BACK_TO_PRODUCT_BUTTON));
     }
     public WebElement getItemName() {
-        return driver.findElement(productName);
+        return driver.findElement(ProductDetailPageUI.PRODUCT_NAME);
     }
 
     public WebElement getItemPrice() {
-        return driver.findElement(productPrice);
+        return driver.findElement(ProductDetailPageUI.PRODUCT_PRICE);
     }
 
     public WebElement getItemDescription() {
-        return driver.findElement(productDesc);
+        return driver.findElement(ProductDetailPageUI.PRODUCT_DESC);
     }
 
     public WebElement getItemImage() {
-        return driver.findElement(productImage);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(ProductDetailPageUI.PRODUCT_IMAGE));
+        return driver.findElement(ProductDetailPageUI.PRODUCT_IMAGE);
     }
 
-    public WebElement getButtonText() {
-        return driver.findElement(addToCartButton);
+    public WebElement getButtonAddToCartText() {
+        return driver.findElement(ProductDetailPageUI.ADD_TO_CART_BUTTON);
     }
 
     public WebElement getButtonRemoveText() {
-        return driver.findElement(removeButton);
+        return driver.findElement(ProductDetailPageUI.REMOVE_BUTTON);
     }
 
     public void clickAddToCart() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(addToCartButton));
-        driver.findElement(addToCartButton).click();
+        driver.findElement(ProductDetailPageUI.ADD_TO_CART_BUTTON).click();
     }
     public void clickRemove() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(removeButton));
-        driver.findElement(removeButton).click();
+        driver.findElement(ProductDetailPageUI.REMOVE_BUTTON).click();
     }
 
     public void clickBackToProducts() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(backToProductsButton));
-        driver.findElement(backToProductsButton).click();
+        driver.findElement(ProductDetailPageUI.BACK_TO_PRODUCT_BUTTON).click();
     }
 
     public String getCartBadgeCount() {
-        List<WebElement> badges = driver.findElements(cartBadge);
+        List<WebElement> badges = driver.findElements(ProductDetailPageUI.CART_BADGE);
         if (badges.isEmpty()) {
             return "";
         }
@@ -75,7 +65,7 @@ public class ProductDetailPage {
     }
 
     public boolean isCartBadgeDisplayed() {
-        return !driver.findElements(cartBadge).isEmpty();
+        return !driver.findElements(ProductDetailPageUI.CART_BADGE).isEmpty();
     }
 }
 

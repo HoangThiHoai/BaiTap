@@ -1,5 +1,6 @@
 package action;
 
+import feature.ui.CheckoutYourInformationPageUI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,53 +14,37 @@ public class CheckoutYourInformationPage {
     private WebDriver driver;
     private WebDriverWait wait;
 
-    private By firstNameInput = By.id("first-name");
-    private By lastNameInput = By.id("last-name");
-    private By zipCodeInput = By.id("postal-code");
-    private By continueButton = By.id("continue");
-    private By errorMessage = By.cssSelector("[data-test='error']");
-    private By cartBadge = By.className("shopping_cart_badge");
-
-    private By cancelButton = By.id("cancel");
 
     public CheckoutYourInformationPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-
     public void enterInfo(String firstName, String lastName, String zipCode) {
-        driver.findElement(firstNameInput).clear();
-        driver.findElement(firstNameInput).sendKeys(firstName);
+        driver.findElement(CheckoutYourInformationPageUI.FIRSTNAME_INPUT).clear();
+        driver.findElement(CheckoutYourInformationPageUI.FIRSTNAME_INPUT).sendKeys(firstName);
 
-        driver.findElement(lastNameInput).clear();
-        driver.findElement(lastNameInput).sendKeys(lastName);
+        driver.findElement(CheckoutYourInformationPageUI.LASTNAME_INPUT).clear();
+        driver.findElement(CheckoutYourInformationPageUI.LASTNAME_INPUT).sendKeys(lastName);
 
-        driver.findElement(zipCodeInput).clear();
-        driver.findElement(zipCodeInput).sendKeys(zipCode);
+        driver.findElement(CheckoutYourInformationPageUI.ZIPCODE_INPUT).clear();
+        driver.findElement(CheckoutYourInformationPageUI.ZIPCODE_INPUT).sendKeys(zipCode);
     }
 
     public void clickContinue() {
-        driver.findElement(continueButton).click();
+        driver.findElement(CheckoutYourInformationPageUI.CONTINUE_BUTTON).click();
     }
-    public WebElement getButtonContineText() {
-        WebElement itemButton = driver.findElement(By.xpath("//input[@id='continue']"));
-        return itemButton;
-    }
+
     public void clickCancel() {
-        driver.findElement(cancelButton).click();
-    }
-    public WebElement getButtonCancelText() {
-        WebElement itemButton = driver.findElement(By.xpath("//button[@id='cancel']"));
-        return itemButton;
+        driver.findElement(CheckoutYourInformationPageUI.CANCEL_BUTTON).click();
     }
 
     public String getErrorMessage() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText();
+        return driver.findElement(CheckoutYourInformationPageUI.ERROR_MESSAGE).getText();
     }
 
     public String getCartBadgeCount() {
-        List<WebElement> badges = driver.findElements(cartBadge);
+        List<WebElement> badges = driver.findElements(CheckoutYourInformationPageUI.CART_BADGE);
         if (badges.isEmpty()) {
             return "";
         }
@@ -67,6 +52,6 @@ public class CheckoutYourInformationPage {
     }
 
     public boolean isCartBadgeDisplayed() {
-        return !driver.findElements(cartBadge).isEmpty();
+        return !driver.findElements(CheckoutYourInformationPageUI.CART_BADGE).isEmpty();
     }
 }

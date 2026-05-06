@@ -4,6 +4,8 @@ import action.LoginPage;
 import action.ProductDetailPage;
 import action.ProductPage;
 
+import feature.ui.ProductDetailPageUI;
+import feature.ui.ProductPageUI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,6 +16,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import utils.BaseTest;
 import utils.ChromeOptionsUtils;
 
 
@@ -21,14 +24,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProductTest {
-    WebDriver driver;
+public class ProductTest extends BaseTest {
     @BeforeMethod
     public void loginBeforeTest() {
-        ChromeOptions chromeOptions = ChromeOptionsUtils.GetChromeOptionsUtils();
-        driver = new ChromeDriver(chromeOptions);
-        driver.manage().window().maximize();
-        driver.get("https://www.saucedemo.com/");
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("standard_user", "secret_sauce");
     }
@@ -69,55 +67,56 @@ public class ProductTest {
 
     }
     @Test
-    public void verifyTextProductPage(){
+    public void verifyUIProductPage(){
 
-        WebElement title = driver.findElement(By.xpath("//span[@data-test='title']"));
+        WebElement title = driver.findElement(ProductPageUI.TITLE);
         String actualTitle = title.getText();
         Assert.assertEquals(actualTitle,"Products");
-        Assert.assertTrue(title.isDisplayed(),"Title Products không disable");
+        Assert.assertTrue(title.isDisplayed(),"Title Products không displayed");
 
-        WebElement logo= driver.findElement(By.xpath("//div[@class='app_logo']"));
+        WebElement logo= driver.findElement(ProductPageUI.APP_LOGO);
         String actualLogo = logo.getText();
         Assert.assertEquals(actualLogo,"Swag Labs");
-        Assert.assertTrue(logo.isDisplayed(),"Logo không disable");
+        Assert.assertTrue(logo.isDisplayed(),"Logo không displayed");
 
         ProductPage productPage = new ProductPage(driver);
         String targetName ="Sauce Labs Backpack";
-        Assert.assertEquals(productPage.getItemName(targetName).getText(),"Sauce Labs Backpack");
-        Assert.assertTrue(productPage.getItemName(targetName).isDisplayed(),"Tên sản phẩm chưa hiển thị");
-        productPage.getItemName(targetName).click();
+        Assert.assertEquals(driver.findElement(ProductPageUI.getItemName(targetName)).getText(),"Sauce Labs Backpack");
+        Assert.assertTrue(driver.findElement(ProductPageUI.getItemName(targetName)).isDisplayed(),"Tên sản phẩm chưa hiển thị");
+        driver.findElement(ProductPageUI.getItemNameLink(targetName)).click();
         Assert.assertTrue(driver.getCurrentUrl().contains("inventory-item.html"));
         driver.navigate().back();
 
-        Assert.assertEquals(productPage.getItemPrice(targetName).getText(),"$29.99");
-        Assert.assertTrue(productPage.getItemName(targetName).isDisplayed(),"Text giá bán chưa không hiển thị");
+        Assert.assertEquals(driver.findElement(ProductPageUI.getItemPrice(targetName)).getText(),"$29.99");
+        Assert.assertTrue(driver.findElement(ProductPageUI.getItemPrice(targetName)).isDisplayed(),"Text giá bán chưa hiển thị");
 
-        Assert.assertEquals(productPage.getItemDescription(targetName).getText(),"carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.");
-        Assert.assertTrue(productPage.getItemDescription(targetName).isDisplayed(),"Text Mô tả chưa hiển thị");
+        Assert.assertEquals(driver.findElement(ProductPageUI.getItemDescription(targetName)).getText(),"carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.");
+        Assert.assertTrue(driver.findElement(ProductPageUI.getItemDescription(targetName)).isDisplayed(),"Text Mô tả chưa hiển thị");
 
-        Assert.assertTrue(productPage.getItemImage(targetName).getAttribute("src").contains("sauce-backpack"));
-        Assert.assertTrue(productPage.getItemImage(targetName).isDisplayed(),"Ảnh đang chưa hiển thị");
-        productPage.getItemImage(targetName).click();
+        Assert.assertTrue(driver.findElement(ProductPageUI.getItemImage(targetName)).getAttribute("src").contains("sauce-backpack"));
+        Assert.assertTrue(driver.findElement(ProductPageUI.getItemImage(targetName)).isDisplayed(),"Ảnh đang chưa hiển thị");
+        driver.findElement(ProductPageUI.getItemImage(targetName)).click();
         Assert.assertTrue(driver.getCurrentUrl().contains("inventory-item.html"));
         driver.navigate().back();
 
-        Assert.assertEquals(productPage.getButtonText(targetName).getText(),"Add to cart");
-        Assert.assertTrue(productPage.getButtonText(targetName).isDisplayed(),"Button Add to cart chưa hiển thị");
+        Assert.assertEquals(driver.findElement(ProductPageUI.getAddToCartButton(targetName)).getText(),"Add to cart");
+        Assert.assertTrue(driver.findElement(ProductPageUI.getAddToCartButton(targetName)).isDisplayed(),"Button Add to cart chưa hiển thị");
 
         //kiểm tra hoạt động icon cart
         productPage.clickCart();
         Assert.assertTrue(driver.getCurrentUrl().contains("cart.html"));
         driver.navigate().back();
 
-//        //Kiểm tra text link Back to products
-//        WebElement backToProductsButton=driver.findElement(By.xpath("//button[@id='back-to-products']"));
-//        String backToProductsButtonText=backToProductsButton.getText();
-//        Assert.assertEquals(backToProductsButtonText,"Back to products","Text Back to products chưa khớp");
-//
-//        //kiểm tra clickBackToProducts
-//        ProductDetailPage productDetailPage = new ProductDetailPage(driver);
-//        productDetailPage.clickBackToProducts();
-//        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+        //Kiểm tra text link Back to products form detail
+        productPage.clickProductByName(targetName);
+        WebElement backToProductsButton=driver.findElement(ProductDetailPageUI.BACK_TO_PRODUCT_BUTTON);
+        String backToProductsButtonText=backToProductsButton.getText();
+        Assert.assertEquals(backToProductsButtonText,"Back to products","Text Back to products chưa khớp");
+
+        //kiểm tra điều hướng clickBackToProducts
+        ProductDetailPage productDetailPage = new ProductDetailPage(driver);
+        productDetailPage.clickBackToProducts();
+        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
 
     }
     @Test
@@ -196,11 +195,11 @@ public class ProductTest {
         String targetProductName = "Sauce Labs Backpack";
 
         // 1. Lấy dữ liệu từ trang Inventory
-        String inventoryName = productPage.getItemName(targetProductName).getText();
-        String inventoryDesc = productPage.getItemDescription(targetProductName).getText();
-        String inventoryPrice = productPage.getItemPrice(targetProductName).getText();
-        String inventoryImage =productPage.getItemImage(targetProductName).getAttribute("src");
-        String inventoryButtonText =productPage.getButtonText(targetProductName).getText();
+        String inventoryName = driver.findElement(ProductPageUI.getItemName(targetProductName)).getText();
+        String inventoryDesc = driver.findElement(ProductPageUI.getItemDescription(targetProductName)).getText();
+        String inventoryPrice = driver.findElement(ProductPageUI.getItemPrice(targetProductName)).getText();
+        String inventoryImage = driver.findElement(ProductPageUI.getItemImage(targetProductName)).getAttribute("src");
+        String inventoryButtonText = driver.findElement(ProductPageUI.getAddToCartButton(targetProductName)).getText();
 
         // 2. Click mở trang Detail
         productPage.clickProductByName(targetProductName);
@@ -213,18 +212,10 @@ public class ProductTest {
         Assert.assertEquals(detailPage.getItemDescription().getText(), inventoryDesc, "Mô tả không khớp!");
         Assert.assertEquals(detailPage.getItemPrice().getText(), inventoryPrice, "Giá không khớp!");
         Assert.assertEquals(detailPage.getItemImage().getAttribute("src"),inventoryImage,"Ảnh không khớp");
-        Assert.assertEquals(detailPage.getButtonText().getText(),inventoryButtonText,"Button không khớp");
+        Assert.assertEquals(detailPage.getButtonAddToCartText().getText(),inventoryButtonText,"Button không khớp");
 
         // 5. Quay lại trang chủ
         detailPage.clickBackToProducts();
-    }
-    @AfterMethod
-    public void tearDown()
-    {
-        if (driver != null)
-        {
-            driver.quit();
-        }
     }
 
 }

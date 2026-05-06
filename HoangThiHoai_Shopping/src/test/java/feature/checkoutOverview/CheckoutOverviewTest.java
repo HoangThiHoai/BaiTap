@@ -1,39 +1,32 @@
 package feature.checkoutOverview;
 
 import action.*;
-import demo.pages.DemoCartPage;
-import demo.pages.DemoCheckoutInfoPage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import feature.ui.CheckoutOverviewPageUI;
+import feature.ui.ProductPageUI;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import utils.ChromeOptionsUtils;
+import utils.BaseTest;
 
 import java.util.List;
 
-public class CheckoutOverviewTest {
-    WebDriver driver;
+public class CheckoutOverviewTest extends BaseTest {
     private String expectedName1;
     private String expectedName2;
     private String expectedPrice1;
     private String expectedPrice2;
     @BeforeMethod
     public void setup() {
-        driver = new ChromeDriver(ChromeOptionsUtils.GetChromeOptionsUtils());
-        driver.manage().window().maximize();
-        driver.get("https://www.saucedemo.com/");
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("standard_user", "secret_sauce");
 
         ProductPage productPage = new ProductPage(driver);
         expectedName1= "Sauce Labs Backpack";
         expectedName2 = "Sauce Labs Bike Light";
-        expectedPrice1 = String.valueOf(productPage.getItemPrice(expectedName1));
-        expectedPrice2 = String.valueOf(productPage.getItemPrice(expectedName2));
+        expectedPrice1 = driver.findElement(ProductPageUI.getItemPrice(expectedName1)).getText();
+        expectedPrice2 = driver.findElement(ProductPageUI.getItemPrice(expectedName2)).getText();
         productPage.clickAddToCart(expectedName1);
         productPage.clickAddToCart(expectedName2);
         productPage.clickCart();
@@ -48,12 +41,12 @@ public class CheckoutOverviewTest {
     @Test
     public void verifyTextCheckoutOverview() {
 
-        WebElement title = driver.findElement(By.xpath("//span[@data-test='title']"));
+        WebElement title = driver.findElement(CheckoutOverviewPageUI.TITLE);
         String actualTitle = title.getText();
         Assert.assertEquals(actualTitle,"Checkout: Overview");
         Assert.assertTrue(title.isDisplayed(),"Title Checkout: Checkout: Overview không displayed");
 
-        WebElement logo= driver.findElement(By.xpath("//div[@class='app_logo']"));
+        WebElement logo= driver.findElement(CheckoutOverviewPageUI.APP_LOGO);
         String actualLogo = logo.getText();
         Assert.assertEquals(actualLogo,"Swag Labs");
         Assert.assertTrue(logo.isDisplayed(),"Logo không displayed");
@@ -61,11 +54,11 @@ public class CheckoutOverviewTest {
         //verify san pham
         CheckoutOverviewPage  checkoutOverviewPage = new CheckoutOverviewPage(driver);
         String targetName ="Sauce Labs Backpack";
-        Assert.assertEquals(checkoutOverviewPage.getItemPrice(targetName).getText(),"$29.99");
-        Assert.assertTrue(checkoutOverviewPage.getItemName(targetName).isDisplayed(),"Text giá bán chưa không hiển thị");
+        Assert.assertEquals(driver.findElement(CheckoutOverviewPageUI.getItemPrice(targetName)).getText(),"$29.99");
+        Assert.assertTrue(driver.findElement(CheckoutOverviewPageUI.getItemName(targetName)).isDisplayed(),"Text giá bán chưa không hiển thị");
 
-        Assert.assertEquals(checkoutOverviewPage.getItemDescription(targetName).getText(),"carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.");
-        Assert.assertTrue(checkoutOverviewPage.getItemDescription(targetName).isDisplayed(),"Text Mô tả chưa hiển thị");
+        Assert.assertEquals(driver.findElement(CheckoutOverviewPageUI.getItemDescription(targetName)).getText(),"carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.");
+        Assert.assertTrue(driver.findElement(CheckoutOverviewPageUI.getItemDescription(targetName)).isDisplayed(),"Text Mô tả chưa hiển thị");
 
         //SL,header
 
@@ -88,41 +81,42 @@ public class CheckoutOverviewTest {
         driver.navigate().back();
 
         //verify text group thanh toan
-        String actualPaymentLabel = driver.findElement(By.xpath("//div[@data-test='payment-info-label']")).getText();
+        String actualPaymentLabel = driver.findElement(CheckoutOverviewPageUI.PAYMENT_LABEL).getText();
         Assert.assertEquals(actualPaymentLabel,"Payment Information:");
 
-        String actualPaymentValue = driver.findElement(By.xpath("//div[@data-test='payment-info-value']")).getText();
+        String actualPaymentValue = driver.findElement(CheckoutOverviewPageUI.PAYMENT_VALUE).getText();
         Assert.assertEquals(actualPaymentValue,"SauceCard #31337");
 
-        String  actualShippingLable =driver.findElement(By.xpath("//div[@data-test='shipping-info-label']")).getText();
+        String  actualShippingLable =driver.findElement(CheckoutOverviewPageUI.SHIPPING_LABEL).getText();
         Assert.assertEquals(actualShippingLable,"Shipping Information:");
 
-        String actualShippingValue =driver.findElement(By.xpath("//div[@data-test='shipping-info-value']")).getText();
+        String actualShippingValue =driver.findElement(CheckoutOverviewPageUI.SHIPPING_VALUE).getText();
         Assert.assertEquals(actualShippingValue,"Free Pony Express Delivery!");
 
-        String actualTotalInfoLabel =driver.findElement(By.xpath("//div[@data-test='total-info-label']")).getText();
+        String actualTotalInfoLabel =driver.findElement(CheckoutOverviewPageUI.TOTAL_INFO_LABEL).getText();
         Assert.assertEquals(actualTotalInfoLabel,"Price Total");
 
-        //text item...
 
     }
     @Test
     public void testCheckoutOverview() {
         CheckoutOverviewPage overviewPage = new CheckoutOverviewPage(driver);
 
-        // 1. Kiểm tra chéo thông tin sản phẩm trên trang Overview
-        Assert.assertEquals(overviewPage.getItemName(expectedName1), expectedName1);
-        Assert.assertEquals(overviewPage.getItemPrice(expectedName1), expectedPrice1);
+        // 1. Kiểm tra chéo thông tin sản phẩm trên trang Overview và Product
+        Assert.assertEquals(driver.findElement(CheckoutOverviewPageUI.getItemName(expectedName1)).getText(), expectedName1);
+        Assert.assertEquals(driver.findElement(CheckoutOverviewPageUI.getItemPrice(expectedName1)).getText(), expectedPrice1);
 
-        Assert.assertEquals(overviewPage.getItemName(expectedName2), expectedName2);
-        Assert.assertEquals(overviewPage.getItemPrice(expectedName2), expectedPrice2);
+        Assert.assertEquals(driver.findElement(CheckoutOverviewPageUI.getItemName(expectedName2)).getText(), expectedName2);
+        Assert.assertEquals(driver.findElement(CheckoutOverviewPageUI.getItemPrice(expectedName2)).getText(), expectedPrice2);
 
         // 2. Kiểm tra logic tính toán tiền
         List<Double> itemPrices = overviewPage.getItemPrices();
 
         double expectedSubtotal = 0;
+        double expectedTax = 0;
         for (Double price : itemPrices) {
             expectedSubtotal += price;
+            expectedTax += price*0.08;
         }
 
         double actualSubtotal = overviewPage.getSubtotal();
@@ -131,6 +125,7 @@ public class CheckoutOverviewTest {
 
         // So sánh
         Assert.assertEquals(actualSubtotal, expectedSubtotal, 0.01);
+        Assert.assertEquals(actualTax,expectedTax, 0.01);
         Assert.assertEquals(actualTotal, actualSubtotal + actualTax, 0.01);
     }
     @AfterMethod

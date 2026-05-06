@@ -1,62 +1,52 @@
 package feature.yourCart;
 
 import action.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import feature.ui.CartPageUI;
+
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import utils.ChromeOptionsUtils;
+import utils.BaseTest;
 
 
-public class CartTest {
-    WebDriver driver;
+public class CartTest extends BaseTest {
 
     @BeforeMethod
     public void loginBeforeTest() {
-        ChromeOptions chromeOptions = ChromeOptionsUtils.GetChromeOptionsUtils();
-        driver = new ChromeDriver(chromeOptions);
-        driver.manage().window().maximize();
-        driver.get("https://www.saucedemo.com/");
         LoginPage loginPage = new LoginPage(driver);
         loginPage.login("standard_user", "secret_sauce");
-
         ProductPage productPage = new ProductPage(driver);
         String targetName = "Sauce Labs Backpack";
         String targetName2 = "Sauce Labs Bike Light";
         productPage.clickAddToCart(targetName);
         productPage.clickAddToCart(targetName2);
-        By cartIcon = By.cssSelector("[data-test='shopping-cart-link']");
-        driver.findElement(cartIcon).click();
+        driver.findElement(CartPageUI.CART_ICON).click();
 
     }
 
     @Test
-    public void verifyTextCartPage() {
+    public void verifyUICartPage() {
 
-        WebElement title = driver.findElement(By.xpath("//span[@data-test='title']"));
+        WebElement title = driver.findElement(CartPageUI.TITLE);
         String actualTitle = title.getText();
         Assert.assertEquals(actualTitle, "Your Cart");
-        Assert.assertTrue(title.isDisplayed(), "Title Products không disable");
+        Assert.assertTrue(title.isDisplayed(), "Title Products không displayed");
 
-        WebElement logo = driver.findElement(By.xpath("//div[@class='app_logo']"));
+        WebElement logo = driver.findElement(CartPageUI.APP_LOGO);
         String actualLogo = logo.getText();
         Assert.assertEquals(actualLogo, "Swag Labs");
-        Assert.assertTrue(logo.isDisplayed(), "Logo không disable");
+        Assert.assertTrue(logo.isDisplayed(), "Logo không displayed");
 
-        WebElement textQty = driver.findElement(By.xpath("//div[@class='cart_quantity_label']"));
+        WebElement textQty = driver.findElement(CartPageUI.TEXT_QTY);
         String actualTextQty = textQty.getText();
         Assert.assertEquals(actualTextQty, "QTY");
-        Assert.assertTrue(textQty.isDisplayed(), "QTY không disable");
+        Assert.assertTrue(textQty.isDisplayed(), "QTY không displayed");
 
-        WebElement textDesc = driver.findElement(By.xpath("//div[@class='cart_desc_label']"));
+        WebElement textDesc = driver.findElement(CartPageUI.TEXT_DESCRIPTION);
         String actualTextDesc = textDesc.getText();
         Assert.assertEquals(actualTextDesc, "Description");
-        Assert.assertTrue(textDesc.isDisplayed(), "Description không disable");
+        Assert.assertTrue(textDesc.isDisplayed(), "Description không displayed");
 
         //Kiểm tra số lượng trên icon giỏ hàng
         CartPage cartPage = new CartPage(driver);
@@ -65,25 +55,64 @@ public class CartTest {
 
         //kiểm tra sản phẩm
         String targetName = "Sauce Labs Backpack";
-        Assert.assertEquals(cartPage.getItemName(targetName).getText(), "Sauce Labs Backpack");
-        Assert.assertTrue(cartPage.getItemName(targetName).isDisplayed(), "Tên sản phẩm chưa hiển thị");
-        cartPage.getItemName(targetName).click();
+        Assert.assertEquals(driver.findElement(CartPageUI.getItemName(targetName)).getText(), "Sauce Labs Backpack");
+        Assert.assertTrue(driver.findElement(CartPageUI.getItemName(targetName)).isDisplayed(), "Tên sản phẩm chưa hiển thị");
+        driver.findElement(CartPageUI.getItemName(targetName)).click();
         Assert.assertTrue(driver.getCurrentUrl().contains("inventory-item.html"));
         driver.navigate().back();
 
-        Assert.assertEquals(cartPage.getItemPrice(targetName).getText(), "$29.99");
-        Assert.assertTrue(cartPage.getItemName(targetName).isDisplayed(), "Text giá bán chưa không hiển thị");
+        Assert.assertEquals(driver.findElement(CartPageUI.getItemPrice(targetName)).getText(), "$29.99");
+        Assert.assertTrue(driver.findElement(CartPageUI.getItemPrice(targetName)).isDisplayed(), "Text giá bán chưa hiển thị");
 
-        Assert.assertEquals(cartPage.getItemDescription(targetName).getText(), "carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.");
-        Assert.assertTrue(cartPage.getItemDescription(targetName).isDisplayed(), "Text Mô tả chưa hiển thị");
+        Assert.assertEquals(driver.findElement(CartPageUI.getItemDescription(targetName)).getText(), "carry.allTheThings() with the sleek, streamlined Sly Pack that melds uncompromising style with unequaled laptop and tablet protection.");
+        Assert.assertTrue(driver.findElement(CartPageUI.getItemDescription(targetName)).isDisplayed(), "Text Mô tả chưa hiển thị");
 
-        Assert.assertEquals(cartPage.getButtonText(targetName).getText(), "Remove");
-        Assert.assertTrue(cartPage.getButtonText(targetName).isDisplayed(), "Button Remove chưa hiển thị");
+        Assert.assertEquals(driver.findElement(CartPageUI.getRemoveButton(targetName)).getText(), "Remove");
+        Assert.assertTrue(driver.findElement(CartPageUI.getRemoveButton(targetName)).isDisplayed(), "Button Remove chưa hiển thị");
 
-        //Kiểm tra text 2 button, số lượng
 
-        //kiểm tra case xóa hết (các màn)
+        //Kiểm tra text link Continue Shopping
+        String continueShoppingText=driver.findElement(CartPageUI.CONTINUE_SHOPPING_BUTTON).getText();
+        Assert.assertEquals(continueShoppingText,"Continue Shopping","Text button Continue Shopping chưa khớp");
 
+        //kiểm tra điều hướng click Continue Shopping
+        cartPage.clickContinueShopping();
+        Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+        driver.navigate().back();
+
+        //Kiểm tra text link checkout
+        String checkoutText=driver.findElement(CartPageUI.CHECKOUT_BUTTON).getText();
+        Assert.assertEquals(checkoutText,"Checkout","Text button Continue Shopping chưa khớp");
+
+        //kiểm tra điều hướng click checkout
+        cartPage.clickCheckout();
+        Assert.assertTrue(driver.getCurrentUrl().contains("checkout-step-one.html"));
+
+
+    }
+    @Test
+    public void testEmptyCart() {
+        CartPage cartPage = new CartPage(driver);
+        cartPage.clickContinueShopping(); // Quay lại trang sản phẩm từ giỏ hàng
+
+        ProductPage productPage = new ProductPage(driver);
+        // Vì BeforeMethod đã thêm 2 sản phẩm này, click lại sẽ là REMOVE
+        productPage.clickAddToCart("Sauce Labs Backpack");
+        productPage.clickAddToCart("Sauce Labs Bike Light");
+        productPage.clickCart();
+
+        Assert.assertTrue(cartPage.isCartEmpty(), "Giỏ hàng phải trống sau khi click remove hết sản phẩm");
+    }
+    @Test
+    public void testRemoveAllItemsAndVerifyBadge() {
+        CartPage cartPage = new CartPage(driver);
+        // Ở trang Cart (do BeforeMethod), ta thực hiện xóa luôn
+        cartPage.clickRemoveButton("Sauce Labs Backpack");
+        cartPage.clickRemoveButton("Sauce Labs Bike Light");
+
+        // 3. Verify badge biến mất hoàn toàn
+        Assert.assertFalse(cartPage.isCartBadgeDisplayed(), "Badge không được hiển thị khi giỏ hàng trống");
+        Assert.assertEquals(cartPage.getCartBadgeCount(), "", "Badge count phải rỗng");
     }
 
     @Test
@@ -92,10 +121,10 @@ public class CartTest {
         String targetProductName = "Sauce Labs Backpack";
 
         // 1. Lấy dữ liệu từ trang CartPage
-        String cartName = cartPage.getItemName(targetProductName).getText();
-        String cartDesc = cartPage.getItemDescription(targetProductName).getText();
-        String cartPrice = cartPage.getItemPrice(targetProductName).getText();
-        String cartButtonText = cartPage.getButtonText(targetProductName).getText();
+        String cartName = driver.findElement(CartPageUI.getItemName(targetProductName)).getText();
+        String cartDesc = driver.findElement(CartPageUI.getItemDescription(targetProductName)).getText();
+        String cartPrice = driver.findElement(CartPageUI.getItemPrice(targetProductName)).getText();
+        String cartButtonText = driver.findElement(CartPageUI.getRemoveButton(targetProductName)).getText();
 
         // 2. Click mở trang Detail
         cartPage.clickProductByName(targetProductName);
@@ -148,10 +177,5 @@ public class CartTest {
         Assert.assertEquals(productDetailPage.getCartBadgeCount(), "1", "Số lượng giỏ hàng không khớp");
 
     }
-    @AfterMethod
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
+
 }
