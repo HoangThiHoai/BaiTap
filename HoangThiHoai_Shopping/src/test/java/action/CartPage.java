@@ -48,8 +48,17 @@ public class CartPage {
         return !driver.findElements(CartPageUI.CART_BADGE).isEmpty();
     }
     public boolean isCartEmpty() {
-        return driver.findElements(By.className("cart_item")).isEmpty();
+        return driver.findElements(CartPageUI.CART_ITEM).isEmpty();
     }
+
+    public int getCartItemsCount() {
+        return driver.findElements(CartPageUI.CART_ITEM).size();
+    }
+
+    public String getItemQuantity(String name) {
+        return driver.findElement(CartPageUI.getItemQuantity(name)).getText();
+    }
+
 }
 
 

@@ -1,5 +1,6 @@
 package action;
 
+import feature.ui.CartPageUI;
 import feature.ui.CheckoutYourInformationPageUI;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

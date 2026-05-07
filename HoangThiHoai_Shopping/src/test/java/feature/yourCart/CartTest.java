@@ -150,6 +150,7 @@ public class CartTest extends BaseTest {
         // 3. Kiểm tra số lượng trên icon giỏ hàng
         Assert.assertTrue(cartPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
         Assert.assertEquals(cartPage.getCartBadgeCount(), "2", "Số lượng giỏ hàng không khớp");
+        Assert.assertEquals(cartPage.getCartItemsCount(), 2, "Số lượng item trong DOM không khớp");
 
         //4. Xóa sản phẩm vừa thêm
         cartPage.clickRemoveButton(targetName);
@@ -157,8 +158,10 @@ public class CartTest extends BaseTest {
         // 5. Kiểm tra số lượng trên icon giỏ hàng
         Assert.assertTrue(cartPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
         Assert.assertEquals(cartPage.getCartBadgeCount(), "1", "Số lượng giỏ hàng không khớp");
+        Assert.assertEquals(cartPage.getCartItemsCount(), 1, "Sản phẩm chưa thực sự bị xóa khỏi DOM");
 
     }
+
 
     @Test
     public void testRemoveFormProductDetail() {
@@ -175,7 +178,64 @@ public class CartTest extends BaseTest {
         // 3. Kiểm tra số lượng trên icon giỏ hàng
         Assert.assertTrue(productDetailPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
         Assert.assertEquals(productDetailPage.getCartBadgeCount(), "1", "Số lượng giỏ hàng không khớp");
+    }
 
+    @Test
+
+    public void testCartWithMaxItems() {
+        CartPage cartPage = new CartPage(driver);
+        cartPage.clickContinueShopping();
+
+        ProductPage productPage = new ProductPage(driver);
+        // Lấy tất cả tên sản phẩm và thêm những cái chưa có
+        java.util.List<String> allProducts = productPage.getAllItemNames();
+        for (String name : allProducts) {
+            // Check if button is "Add to cart" not "Remove"
+            // Tuy nhiên để đơn giản trong kịch bản này, ta có thể reset hoặc chỉ add những cái còn thiếu
+            // Ở BeforeMethod đã add Backpack và Bike Light
+            if (!name.equals("Sauce Labs Backpack") && !name.equals("Sauce Labs Bike Light")) {
+                productPage.clickAddToCart(name);
+            }
+        }
+        productPage.clickCart();
+
+        Assert.assertEquals(cartPage.getCartBadgeCount(), "6", "Số lượng badge không phải 6 khi add max items");
+    }
+
+    @Test
+    public void testCheckoutWithEmptyCart() {
+        CartPage cartPage = new CartPage(driver);
+        cartPage.clickRemoveButton("Sauce Labs Backpack");
+        cartPage.clickRemoveButton("Sauce Labs Bike Light");
+
+        Assert.assertTrue(cartPage.isCartEmpty(), "Giỏ hàng phải trống");
+        
+        cartPage.clickCheckout();
+        Assert.assertTrue(driver.getCurrentUrl().contains("checkout-step-one.html"), "Vẫn phải cho phép đi đến trang checkout thông tin");
+    }
+
+    @Test
+    public void testItemQuantityIsAlwaysOne() {
+        CartPage cartPage = new CartPage(driver);
+        Assert.assertEquals(cartPage.getItemQuantity("Sauce Labs Backpack"), "1", "Quantity không phải là 1");
+        Assert.assertEquals(cartPage.getItemQuantity("Sauce Labs Bike Light"), "1", "Quantity không phải là 1");
+    }
+
+    @Test
+    public void testCartStateAfterRefresh() {
+        CartPage cartPage = new CartPage(driver);
+        
+        // 1. Verify trạng thái trước khi refresh
+        Assert.assertEquals(cartPage.getCartBadgeCount(), "2");
+        Assert.assertEquals(cartPage.getCartItemsCount(), 2);
+
+        // 2. Refresh trang
+        driver.navigate().refresh();
+
+        // 3. Verify trạng thái sau khi refresh
+        Assert.assertEquals(cartPage.getCartBadgeCount(), "2", "Badge bị mất sau khi refresh");
+        Assert.assertEquals(cartPage.getCartItemsCount(), 2, "Sản phẩm bị mất khỏi DOM sau khi refresh");
     }
 
 }
+

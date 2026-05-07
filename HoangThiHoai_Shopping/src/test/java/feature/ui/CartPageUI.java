@@ -12,6 +12,8 @@ public class CartPageUI {
     public static final By APP_LOGO = By.className("app_logo");
     public  static final By TEXT_QTY=By.xpath("//div[@class='cart_quantity_label']");
     public static final By TEXT_DESCRIPTION=By.xpath("//div[@class='cart_desc_label']");
+    public static final By CART_ITEM = By.className("cart_item");
+
     
     public static By getItemName(String name) {
         return By.xpath("//div[text()='" + name + "']");
@@ -28,4 +30,9 @@ public class CartPageUI {
     public static By getRemoveButton(String name) {
         return By.xpath("//div[text()='" + name + "']/ancestor::div[@class='cart_item']/descendant::button");
     }
+
+    public static By getItemQuantity(String name) {
+        return By.xpath("//div[text()='" + name + "']/ancestor::div[@class='cart_item']/descendant::div[@class='cart_quantity']");
+    }
+
 }

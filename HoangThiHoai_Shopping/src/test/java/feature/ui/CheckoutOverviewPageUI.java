@@ -19,6 +19,8 @@ public class CheckoutOverviewPageUI {
     public static final By SHIPPING_LABEL = By.xpath("//div[@data-test='shipping-info-label']");
     public static final By SHIPPING_VALUE = By.xpath("//div[@data-test='shipping-info-value']");
     public static final By TOTAL_INFO_LABEL = By.xpath("//div[@data-test='total-info-label']");
+    public  static final By TEXT_QTY=By.xpath("//div[@class='cart_quantity_label']");
+    public static final By TEXT_DESCRIPTION=By.xpath("//div[@class='cart_desc_label']");
 
     public static By getItemName(String name) {
         return By.xpath("//div[text()='" + name + "']");

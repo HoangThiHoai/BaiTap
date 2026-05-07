@@ -101,16 +101,11 @@ public class CheckoutYourInformationTest extends BaseTest {
         driver.navigate().back();
 
 
-        //verify so luong gio hang
+       //Kiểm tra số lượng trên icon giỏ hàng
+        CheckoutYourInformationPage checkoutYourInformationPage= new CheckoutYourInformationPage(driver);
+        Assert.assertTrue(checkoutYourInformationPage.isCartBadgeDisplayed(), "Giỏ hàng không hiển thị");
+        Assert.assertEquals(checkoutYourInformationPage.getCartBadgeCount(), "2", "Số lượng giỏ hàng không khớp");
 
     }
 
-    @AfterMethod
-    public void tearDown()
-    {
-        if (driver != null)
-        {
-            driver.quit();
-        }
-    }
 }

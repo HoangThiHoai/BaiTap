@@ -12,4 +12,5 @@ public class CheckoutYourInformationPageUI {
     public static final By CANCEL_BUTTON = By.id("cancel");
     public static final By TITLE = By.xpath("//span[@data-test='title']");
     public static final By APP_LOGO = By.className("app_logo");
+
 }
