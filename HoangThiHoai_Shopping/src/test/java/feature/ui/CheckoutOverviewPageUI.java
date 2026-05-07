@@ -11,6 +11,8 @@ public class CheckoutOverviewPageUI {
     public static final By TAX_LABEL = By.className("summary_tax_label");
     public static final By TOTAL_LABEL = By.className("summary_total_label");
     public static final By CART_BADGE = By.className("shopping_cart_badge");
+    public static final By CART_ITEM = By.className("cart_item");
+
     public static final By CANCEL_BUTTON = By.id("cancel");
     public static final By TITLE = By.xpath("//span[@data-test='title']");
     public static final By APP_LOGO = By.className("app_logo");

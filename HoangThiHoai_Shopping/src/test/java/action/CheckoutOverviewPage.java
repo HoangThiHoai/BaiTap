@@ -82,4 +82,8 @@ public class CheckoutOverviewPage {
         }
         return prices;
     }
-}
+
+    public int getCartItemsCount() {
+        return driver.findElements(CheckoutOverviewPageUI.CART_ITEM).size();
+    }
+}

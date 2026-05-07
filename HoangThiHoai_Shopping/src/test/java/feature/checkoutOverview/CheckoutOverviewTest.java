@@ -81,6 +81,7 @@ public class CheckoutOverviewTest extends BaseTest {
         Assert.assertEquals(checkoutOverviewPage.getButtonFinishText().getText(), "Finish");
         checkoutOverviewPage.clickFinish();
         Assert.assertTrue(driver.getCurrentUrl().contains("checkout-complete.html"));
+        Assert.assertTrue(driver.getTitle().contains("Checkout: Overview"));
         driver.navigate().back();
 
 
@@ -140,4 +141,30 @@ public class CheckoutOverviewTest extends BaseTest {
         Assert.assertEquals(actualTotal, actualSubtotal + actualTax, 0.01);
     }
 
-}
+    @Test
+
+    public void testCheckoutWithEmptyCart() {
+        CheckoutOverviewPage overviewPage = new CheckoutOverviewPage(driver);
+        // Do BeforeMethod đã thêm hàng, ta cần quay lại xóa để test case trống
+        overviewPage.clickCancel();
+
+        ProductPage productPage = new ProductPage(driver);
+        productPage.clickCart();
+
+        CartPage cartPage = new CartPage(driver);
+        cartPage.clickRemoveButton(expectedName1);
+        cartPage.clickRemoveButton(expectedName2);
+        cartPage.clickCheckout();
+
+        CheckoutYourInformationPage checkoutInfoPage = new CheckoutYourInformationPage(driver);
+        checkoutInfoPage.enterInfo("Hoai", "Hoang", "3214234");
+        checkoutInfoPage.clickContinue();
+
+        // Kiểm tra Overview với giỏ hàng trống
+        Assert.assertEquals(overviewPage.getCartItemsCount(), 0, "Danh sách sản phẩm phải trống");
+        Assert.assertEquals(overviewPage.getSubtotal(), 0.0, "Item total phải là 0");
+        Assert.assertEquals(overviewPage.getTax(), 0.0, "Tax phải là 0");
+        Assert.assertEquals(overviewPage.getTotal(), 0.0, "Total phải là 0");
+    }
+
+}
