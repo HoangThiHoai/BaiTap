@@ -1,4 +1,4 @@
-package feature.E2ECheckoutTest;
+package feature.EToECheckoutTest;
 
 
 import action.*;
@@ -14,11 +14,11 @@ import utils.ExcelUtils;
 import java.util.List;
 import java.util.Map;
 
-public class E2ECheckoutTest extends BaseTest {
+public class EToECheckoutTest extends BaseTest {
 
     @DataProvider(name = "e2eData")
     public Object[][] getE2EData() {
-        List<Map<String, String>> dataList = ExcelUtils.readExcelData("DataTest.xlsx", "E2E_Test");
+        List<Map<String, String>> dataList = ExcelUtils.readExcelData("DataTest.xlsx", "EToE_Test");
         Object[][] data = new Object[dataList.size()][6];
         for (int i = 0; i < dataList.size(); i++) {
             Map<String, String> row = dataList.get(i);
